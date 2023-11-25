@@ -161,7 +161,7 @@ class _FeedbackFormState extends State<FeedbackForm> {
   void submitFeedback() async {
     try {
       // Buka Hive box untuk feedback
-      var feedbackBox = await Hive.openBox<FeedbackModel>('feedbackBox');
+      var feedbackBox = await Hive.openBox<FeedbackModel>('feedbackBoxCarlos');
 
       // Buat objek FeedbackModel dari data yang dimasukkan
       FeedbackModel feedback = FeedbackModel(

@@ -18,11 +18,9 @@ class _TeamListPageState extends State<TeamListPage> {
     Converter(),
     FeedbackForm(),
     ProfilePage(),
-    // Add your Log Out screen here
   ];
 
-  final SportsApiClient sportsApiClient =
-      SportsApiClient();
+  final SportsApiClient sportsApiClient = SportsApiClient();
   late List<Teams> teams;
 
   @override
@@ -34,8 +32,7 @@ class _TeamListPageState extends State<TeamListPage> {
   Future<void> fetchData() async {
     try {
       final data = await sportsApiClient.fetchData();
-      final teamModel =
-          TeamModel.fromJson(data); // Assuming you have a TeamModel model class
+      final teamModel = TeamModel.fromJson(data); // Assuming you have a TeamModel model class
 
       setState(() {
         teams = teamModel.teams ?? [];
