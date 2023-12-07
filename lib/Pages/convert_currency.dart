@@ -163,12 +163,13 @@ class _CurrencyConverterState extends State<CurrencyConverter> {
           }
         });
       },
-      icon: Icon(Icons.arrow_drop_down, color: Colors.white), // Set the color to white
+      icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+      dropdownColor: Colors.teal[700],
       items: conversionRates.keys
           .map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
-          child: Text(value),
+          child: Text(value, style: TextStyle(color: Colors.white)),
         );
       }).toList(),
     );

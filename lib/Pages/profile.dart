@@ -1,6 +1,8 @@
 import 'package:carlos_teori/Pages/converter.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Model/feedback_model.dart';
 import 'feedback.dart';
 import 'home.dart';
 import 'login_page.dart';
@@ -12,12 +14,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   int _currentIndex = 3;
-  final List<Widget> _screens = [
-    TeamListPage(),
-    Converter(),
-    FeedbackForm(),
-    ProfilePage(),
-  ];
+  final TextEditingController _saranController = TextEditingController();
+  final TextEditingController _kesanController = TextEditingController();
 
   Future<void> _logout() async {
     // Clear the username from shared preferences
@@ -53,40 +51,119 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: Align(
           alignment: Alignment.topCenter,
-          child: Container(
-            height: 350,
-            width: 300,
-            child: Card(
-              color: Colors.teal[300],
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 10.0),
-                    child: ClipOval(
-                      child: Image.network(
-                        'https://instagram.fjog3-1.fna.fbcdn.net/v/t51.2885-19/395226969_355443200384716_3040698718891801371_n.jpg?stp=dst-jpg_s320x320&_nc_ht=instagram.fjog3-1.fna.fbcdn.net&_nc_cat=104&_nc_ohc=Xq-WFHGTjjQAX8BTR8Y&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AfBwaVpNqEp8ywinU_aRmJ5oHFNU5fSRX91Rpp4JJYdLQw&oe=65659F48&_nc_sid=8b3546',
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.cover,
+          child: Column(
+            children: [
+              Container(
+                height: 350,
+                width: 300,
+                child: Card(
+                  color: Colors.teal[300],
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.symmetric(vertical: 10.0),
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/carlos.jpg',
+                            width: 200,
+                            height: 200,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        'Carlos Nainggolan',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                      Text(
+                        '124210045',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                      Text(
+                        'Sidikalang, 1 Oktober 2001',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Saran:',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white
                       ),
                     ),
-                  ),
-                  SizedBox(height: 15),
-                  Text(
-                    'Carlos Nainggolan',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  Text(
-                    '124210045',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  Text(
-                    'Sidikalang, 1 Oktober 2001',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ],
+                    TextField(
+                      controller: _saranController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'Masukkan saran Anda...',
+                        border: OutlineInputBorder(),
+                        hintStyle: TextStyle(
+                            color: Colors.white
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)
+                        ),
+                      ),
+                      cursorColor: Colors.white,
+                      style: TextStyle(color: Colors.white)
+                    ),
+                    SizedBox(height: 16.0),
+                    Text(
+                      'Kesan:',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white
+                      ),
+                    ),
+                    TextField(
+                      controller: _kesanController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                          hintText: 'Masukkan kesan Anda...',
+                          border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.white)
+                          ),
+                          hintStyle: TextStyle(
+                              color: Colors.white
+                          )
+                      ),
+                      cursorColor: Colors.white,
+                      style: TextStyle(color: Colors.white)
+                    ),
+                    SizedBox(height: 24.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        submitFeedback();
+                      },
+                      child: Text('Kirim'),
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.teal[300]!)
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -138,5 +215,27 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
     );
+  }
+
+  void submitFeedback() async {
+    try {
+      // Buka Hive box untuk feedback
+      var feedbackBox = await Hive.openBox<FeedbackModel>('feedbackBoxCarlos');
+
+      // Buat objek FeedbackModel dari data yang dimasukkan
+      FeedbackModel feedback = FeedbackModel(
+        saran: _saranController.text,
+        kesan: _kesanController.text,
+      );
+
+      // Simpan objek FeedbackModel ke dalam Hive box
+      await feedbackBox.add(feedback);
+
+      // Tampilkan pesan sukses atau lakukan sesuatu yang lain
+      print('Feedback berhasil disimpan ke dalam Hive box.');
+    } catch (e) {
+      // Handle error jika ada
+      print('Error: $e');
+    }
   }
 }

@@ -9,6 +9,7 @@ void main() async {
 
   // Register the Hive adapters here
   Hive.registerAdapter(FeedbackModelAdapter());
+  await Hive.openBox<FeedbackModel>('feedbackBoxCarlos');
 
   runApp(MyApp());
 }

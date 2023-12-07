@@ -19,7 +19,6 @@ class _ConverterState extends State<Converter> {
     Converter(),
     FeedbackForm(),
     ProfilePage(),
-    // Add your Log Out screen here
   ];
 
   @override
