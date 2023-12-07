@@ -6,8 +6,6 @@ import 'Pages/login_page.dart';
 
 void main() async {
   await Hive.initFlutter();
-
-  // Register the Hive adapters here
   Hive.registerAdapter(FeedbackModelAdapter());
   await Hive.openBox<FeedbackModel>('feedbackBoxCarlos');
 
